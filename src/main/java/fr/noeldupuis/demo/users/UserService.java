@@ -1,16 +1,24 @@
 package fr.noeldupuis.demo.users;
 
+import fr.noeldupuis.demo.DTO.DTOService;
 import fr.noeldupuis.demo.DTO.UserDTO;
 import fr.noeldupuis.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    DTOService dtoService;
+
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -21,31 +29,30 @@ public class UserService {
     }
 
     public void changerMail(String ancienMail, String nouveauMail) {
-        userRepository.findAllByEmail(ancienMail).stream().forEach(user -> {
-            user.setEmail(nouveauMail);
-            userRepository.save(user);
-        });
+        UserEntity user = userRepository.findFirstByEmail(ancienMail);
+        user.setEmail(nouveauMail);
+        userRepository.save(user);
     }
 
     public void changerMotDePasse(String mail, String nouveauMDP) {
-        userRepository.findAllByEmail(mail).stream().forEach(user -> {
-            user.setPassword(passwordEncoder.encode(nouveauMDP));
-            userRepository.save(user);
-        });
+        UserEntity user = userRepository.findFirstByEmail(mail);
+        user.setPassword(passwordEncoder.encode(nouveauMDP));
+        userRepository.save(user);
     }
 
     public UserDTO getUser(String mail) {
-        UserEntity user = userRepository.findAllByEmail(mail).get(0);
-        return createDTO(user);
+        UserEntity user = userRepository.findFirstByEmail(mail);
+        return dtoService.createDTO(user);
     }
 
     public void approveUser(String mail) {
-        UserEntity user = userRepository.findAllByEmail(mail).get(0);
+        UserEntity user = userRepository.findFirstByEmail(mail);
         user.setDroits(Droits.ROLE_VALIDE);
         userRepository.save(user);
     }
 
-    private UserDTO createDTO(UserEntity user) {
-        return new UserDTO(user.getName(), user.getFirstName(), user.getEmail(), user.getClasse(), user.getDroits());
+    public List<UserDTO> getAllUsers() {
+        List<UserEntity> users = userRepository.findAll();
+        return users.stream().map(userEntity -> dtoService.createDTO(userEntity)).collect(Collectors.toList());
     }
 }
