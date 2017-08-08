@@ -4,12 +4,18 @@ import fr.noeldupuis.demo.DTO.CoursDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -31,5 +37,15 @@ public class CoursController {
     public ResponseEntity listerTousDocuments() {
         List<CoursDTO> cours = coursService.listerTousDocuments();
         return new ResponseEntity(cours, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/telechargerFichier", method = RequestMethod.GET)
+    public void telechargerFichier(HttpServletResponse response, @RequestParam(value = "id") long id) throws IOException {
+        CoursEntity cours = coursService.findCours(id);
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", String.format("inline; filename=\"" + cours.getName() + ".pdf" +"\""));
+        InputStream inputStream = new BufferedInputStream(new FileInputStream(cours.getPath()));
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
     }
 }

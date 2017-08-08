@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CoursRepository extends JpaRepository<CoursEntity, Long>{
 
+    CoursEntity findFirstById(long id);
 }

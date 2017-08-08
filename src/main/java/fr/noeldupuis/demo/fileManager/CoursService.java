@@ -68,7 +68,7 @@ public class CoursService {
         coursRepository.save(cours);
         String path = "/opt/spring/docs/" + user.getId();
         String newName = String.format("%07d", cours.getId()) + ".pdf";
-        cours.setPath(path + File.separator + name);
+        cours.setPath(path + File.separator + newName);
         coursRepository.save(cours);
         if (file.getOriginalFilename().endsWith(".pdf") && fileUpload(file, newName, path) == 0) {
             return new ResponseEntity(HttpStatus.CREATED);
@@ -80,5 +80,10 @@ public class CoursService {
     public List<CoursDTO> listerTousDocuments() {
         List<CoursEntity> cours = coursRepository.findAll();
         return cours.stream().map(coursEntity -> dtoService.createDTO(coursEntity)).collect(Collectors.toList());
+    }
+
+    public CoursEntity findCours(long id) {
+        CoursEntity cours = coursRepository.findFirstById(id);
+        return cours;
     }
 }
