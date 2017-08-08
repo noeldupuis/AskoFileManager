@@ -1,4 +1,4 @@
-package fr.noeldupuis.demo.users.Users;
+package fr.noeldupuis.demo.users;
 
 import javax.persistence.*;
 
@@ -26,17 +26,8 @@ public class UserEntity {
 
     @Column(name= "CLASSE")
     private String classe;
-
-    public Droits getDroits() {
-        return droits;
-    }
-
-    public void setDroits(Droits droits) {
-        this.droits = droits;
-    }
-
     @Column(name= "DROITS")
-    private Droits droits;
+    private String droits;
 
     public UserEntity() {
     }
@@ -47,7 +38,15 @@ public class UserEntity {
         this.password = password;
         this.email = email;
         this.classe = classe;
-        this.droits = Droits.NON_VALIDE;
+        this.droits = Droits.ROLE_NON_VALIDE.toString();
+    }
+
+    public Droits getDroits() {
+        return Droits.valueOf(droits);
+    }
+
+    public void setDroits(Droits droits) {
+        this.droits = droits.toString();
     }
 
     public long getId() {

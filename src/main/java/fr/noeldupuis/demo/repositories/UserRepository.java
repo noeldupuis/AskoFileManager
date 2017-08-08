@@ -1,6 +1,6 @@
 package fr.noeldupuis.demo.repositories;
 
-import fr.noeldupuis.demo.users.Users.UserEntity;
+import fr.noeldupuis.demo.users.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
